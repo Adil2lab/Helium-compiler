@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Debug hel executable",
+            "program": "${workspaceFolder}/build/${input:helExecutable}",
+            "args": [
+                "${input:hlmFile}"
+            ],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build-hel"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "helExecutable",
+            "type": "pickString",
+            "description": "Select the hel executable to debug",
+            "options": [
+                "hel"
+            ]
+        },
+        {
+            "id": "hlmFile",
+            "type": "promptString",
+            "description": "Enter the path to the .hlm file to use as input"
+        }
+    ]
+}
