@@ -10,63 +10,6 @@
 #include "generator.hpp"
 #include "parser.hpp"
 
-void debug(const std::vector<Token> &tokens) {
-    std::cout << "Tokens:" << std::endl;
-    for (const auto &token: tokens) {
-        std::cout << "Type: ";
-        switch (token.type) {
-            case TokenType::Identifier:
-                std::cout << "Identifier";
-                break;
-            case TokenType::Int_lit:
-                std::cout << "Int_lit";
-                break;
-            case TokenType::String:
-                std::cout << "String";
-                break;
-            case TokenType::Symbol:
-                std::cout << "Symbol";
-                break;
-            case TokenType::SemCln:
-                std::cout << "SemCln";
-                break;
-            case TokenType::_ix:
-                std::cout << "_ix";
-                break;
-            case TokenType::_ftn:
-                std::cout << "_ftn";
-                break;
-            case TokenType::_return:
-                std::cout << "_return";
-                break;
-            case TokenType::Unknown:
-                std::cout << "Unknown";
-                break;
-        }
-        std::cout << ", Value: " << token.value.value();
-
-        std::cout << std::endl;
-    }
-}
-
-std::string tk_to_asm(const std::vector<Token> &tokens) {
-    std::ostringstream out;
-    out << "global _start\n_start:\n";
-    for (int i = 0; i < tokens.size(); i++) {
-        const Token &token = tokens.at(i);
-        if (token.type == TokenType::_return) {
-            if (i + 1 < tokens.size() && tokens.at(i + 1).type == TokenType::Int_lit) {
-                if (i + 2 < tokens.size() && tokens.at(i + 2).type == TokenType::SemCln) {
-                    out << "    mov rax, 60\n";
-                    out << "    mov rdi, " << tokens.at(i + 1).value.value() << "\n";
-                    out << "    syscall";
-                }
-            }
-        }
-    }
-    return out.str();
-}
-
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Incorrect usage. Please provide exactly one argument." << std::endl;

@@ -14,9 +14,15 @@ public:
     inline explicit Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {
     }
 
+    Token parse_paren() {
+
+    }
+
     std::optional<NodeExp> parse_exp() {
         if (peak().has_value() && peak().value().type == TokenType::Int_lit) {
             return NodeExp {.token = consume()};
+        } else if (peak().has_value() && peak().value().type == TokenType::openParen) {
+            return NodeExp {.token = parse_paren()};
         }
     }
 
@@ -43,11 +49,11 @@ public:
     }
 
 private:
-    [[nodiscard]] inline std::optional<Token> peak(int ahead = 1) const {
-        if (m_index + ahead > tokens.size()) {
+    [[nodiscard]] inline std::optional<Token> peak(int offset = 0) const {
+        if (m_index + offset >= tokens.size()) {
             return {};
         } else {
-            return tokens.at(m_index);
+            return tokens.at(m_index + offset);
         }
     }
 

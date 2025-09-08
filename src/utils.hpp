@@ -10,10 +10,11 @@ enum class TokenType {
     String,
     Symbol,
     SemCln,
-    _ix,
+    _class,
     _ftn,
     _return,
-    Unknown
+    openParen,
+    closeParen
 };
 
 struct Token {
@@ -21,6 +22,7 @@ struct Token {
     std::optional<std::string> value;
     int line;
     int column;
+    size_t orderParen;
 };
 
 struct NodeExp {
