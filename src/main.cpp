@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     }
 
     Parser parser(std::move(tokens));
-    std::optional<NodeRet> tree = parser.parse();
+    std::optional<NodeRet> tree = parser.parse_ret();
     if (!tree.has_value()) {
         std::cerr << "Failed to parse AST." << std::endl;
         return EXIT_FAILURE;

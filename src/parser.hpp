@@ -14,19 +14,20 @@ public:
     inline explicit Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {
     }
 
-    Token parse_paren() {
+    Token parse_paren(const int& line) {
 
     }
 
     std::optional<NodeExp> parse_exp() {
         if (peak().has_value() && peak().value().type == TokenType::Int_lit) {
             return NodeExp {.token = consume()};
-        } else if (peak().has_value() && peak().value().type == TokenType::openParen) {
-            return NodeExp {.token = parse_paren()};
-        }
+        } // else if (peak().has_value() && peak().value().type == TokenType::openParen) {
+        //     return NodeExp {.token = parse_paren()};
+        // }
+        return std::nullopt;
     }
 
-    std::optional<NodeRet> parse() {
+    std::optional<NodeRet> parse_ret() {
         std::optional<NodeRet> res;
         while (peak().has_value()) {
             if (peak().value().type == TokenType::_return) {
@@ -40,7 +41,19 @@ public:
                 if (peak().has_value() && peak().value().type == TokenType::SemCln) {
                     consume();
                 } else {
-                    std::cerr << "Invalid expression at line " << peak().value().line << std::endl;
+                    std::cerr << "Expected ';' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                if (peak().has_value() && peak().value().type == TokenType::openParen) {
+                    consume();
+                } else {
+                    std::cerr << "Expected '(' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                if (peak().has_value() && peak().value().type == TokenType::closeParen) {
+                    consume();
+                } else {
+                    std::cerr << "Expected ')' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
                     exit(EXIT_FAILURE);
                 }
             }

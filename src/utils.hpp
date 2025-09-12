@@ -20,9 +20,8 @@ enum class TokenType {
 struct Token {
     TokenType type;
     std::optional<std::string> value;
-    int line;
-    int column;
-    size_t orderParen;
+    size_t line;
+    size_t column;
 };
 
 struct NodeExp {

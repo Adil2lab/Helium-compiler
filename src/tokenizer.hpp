@@ -22,15 +22,15 @@ public:
                     buff.push_back(consume());
                 }
                 if (buff == "return") {
-                    tokens.push_back({TokenType::_return});
+                    tokens.push_back({TokenType::_return, std::nullopt, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "fn") {
-                    tokens.push_back({TokenType::_ftn, buff});
+                    tokens.push_back({TokenType::_ftn, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "class") {
-                    tokens.push_back({TokenType::_class, buff});
+                    tokens.push_back({TokenType::_class, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else {
@@ -42,30 +42,29 @@ public:
                 while (peak().has_value() && std::isdigit(peak().value())) {
                     buff.push_back(consume());
                 }
-                tokens.push_back({TokenType::Int_lit, buff});
+                tokens.push_back({TokenType::Int_lit, buff, m_line, m_token});
                 buff.clear();
                 continue;
             } else if (peak().value() == '"') {
-                buff.push_back(consume());
+                consume();
                 while (peak().has_value() && peak().value() != '"') {
                     buff.push_back(consume());
                 }
-                tokens.push_back({TokenType::String, buff});
+                consume();
+                tokens.push_back({TokenType::String, buff, m_line, m_token});
                 buff.clear();
                 continue;
             } else if (peak().value() == ';') {
                 consume();
-                tokens.push_back({TokenType::SemCln});
+                tokens.push_back({TokenType::SemCln, std::nullopt, m_line, m_token});
                 continue;
             } else if (peak().value() == '(') {
-                buff.push_back(consume());
-                tokens.push_back({TokenType::openParen, buff});
-                buff.clear();
+                consume();
+                tokens.push_back({TokenType::openParen, std::nullopt, m_line, m_token});
                 continue;
             } else if (peak().value() == ')') {
-                buff.push_back(consume());
-                tokens.push_back({TokenType::closeParen, buff});
-                buff.clear();
+                consume();
+                tokens.push_back({TokenType::closeParen, std::nullopt, m_line, m_token});
                 continue;
             } else if (std::isspace(peak().value())) {
                 consume();
@@ -90,12 +89,18 @@ private:
     }
 
     inline char consume() {
-        if (peak().value() == '"') {
-            m_index++;
+        char c = m_src.at(m_index++);
+        if (c == '\n') {
+            m_line++;
+            m_token = 1;
+        } else {
+            m_token++;
         }
-        return m_src.at(m_index++);
+        return c;
     }
 
     const std::string m_src;
     size_t m_index = 0;
+    size_t m_line = 1;
+    size_t m_token = 1;
 };
