@@ -1,9 +1,22 @@
 # Return Grammar
+In **HLM**, it is mandatory to return a value to end the program or specific function.  
+> [!NOTE]
+> Best practice is to use **integer** for the main function.
+
 $$
 \begin{align}
-    [\text{return}] \to EXPs \to [\text{int\_lit}]
+    [\text{return}] \leftarrow EXP
 \end{align}
-$$
+$$  
+
+return takes only **one** expression<sub>1</sub>. The syntax would look like this $\to$  
+```
+return 0;
+```
+So EBNF for return is this $\to$  
+```ebnf
+return_stmt = "return", expression, ";";
+```
 # Variables Grammar
 $$
 \begin{align}

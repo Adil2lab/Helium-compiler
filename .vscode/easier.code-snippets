@@ -1,0 +1,42 @@
+{
+	"Alert: Note": {
+		"prefix": "alertnote",
+		"body": [
+			"> [!NOTE]",
+			"> ${1:Note content here}"
+		],
+		"description": "Insert a note alert block"
+	},
+	"Alert: Warning": {
+		"prefix": "alertwarning",
+		"body": [
+			"> [!WARNING]",
+			"> ${1:Warning content here}"
+		],
+		"description": "Insert a warning alert block"
+	},
+	"Alert: Tip": {
+		"prefix": "alerttip",
+		"body": [
+			"> [!TIP]",
+			"> ${1:Tip content here}"
+		],
+		"description": "Insert a tip alert block"
+	},
+	"Alert: Caution": {
+		"prefix": "alertcaution",
+		"body": [
+			"> [!CAUTION]",
+			"> ${1:Caution content here}"
+		],
+		"description": "Insert a caution alert block"
+	},
+	"Alert: Important": {
+		"prefix": "alertimportant",
+		"body": [
+			"> [!IMPORTANT]",
+			"> ${1:Important content here}"
+		],
+		"description": "Insert an important alert block"
+	}
+}

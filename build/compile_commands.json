@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/adil/Desktop/Hydrogen/build",
-  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/hel.dir/src/main.cpp.o -c /home/adil/Desktop/Hydrogen/src/main.cpp",
+  "command": "/usr/bin/clang++   -g -std=gnu++20 -o CMakeFiles/hel.dir/src/main.cpp.o -c /home/adil/Desktop/Hydrogen/src/main.cpp",
   "file": "/home/adil/Desktop/Hydrogen/src/main.cpp",
   "output": "CMakeFiles/hel.dir/src/main.cpp.o"
 }
