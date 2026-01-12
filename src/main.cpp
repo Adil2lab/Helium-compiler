@@ -14,18 +14,31 @@ int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Incorrect usage. Please provide exactly one argument." << std::endl;
         std::cerr << "Correct usage is:" << std::endl;
-        std::cerr << "  ./hel <file.hlm>" << std::endl;
+        std::cerr << "  ./hel <file.qlm>" << std::endl;
         std::cerr << "  or " << std::endl;
-        std::cerr << "  hel <file.hlm>" << std::endl;
+        std::cerr << "  hel <file.qlm>" << std::endl;
+        return EXIT_FAILURE;
+    }
+    else if (!(std::string(argv[1]).ends_with(".qlm"))) {
+        std::cerr << "Error: given files are not supported. Please use .qlm files instead." << std::endl;
+        return EXIT_FAILURE;
+    }
+    else if (!(std::filesystem::exists(argv[1]))) {
+        std::cerr << "Error: file '" << argv[1] << "' does not exist." << std::endl;
         return EXIT_FAILURE;
     }
 
     std::string contents;
     {
-        std::stringstream contents_stream;
-        std::fstream input(argv[1], std::ios::in);
-        contents_stream << input.rdbuf();
-        contents = contents_stream.str();
+        try {
+            std::stringstream contents_stream;
+            std::fstream input(argv[1], std::ios::in);
+            contents_stream << input.rdbuf();
+            contents = contents_stream.str();
+        } catch (const std::exception& ex) {
+            std::cerr << "Error reading file: " << ex.what() << std::endl;
+            return EXIT_FAILURE;
+        }
     }
 
     Tokenizer tokenizer(std::move(contents));
