@@ -44,18 +44,7 @@ public:
                     std::cerr << "Expected ';' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
                     exit(EXIT_FAILURE);
                 }
-                if (peak().has_value() && peak().value().type == TokenType::openParen) {
-                    consume();
-                } else {
-                    std::cerr << "Expected '(' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
-                    exit(EXIT_FAILURE);
-                }
-                if (peak().has_value() && peak().value().type == TokenType::closeParen) {
-                    consume();
-                } else {
-                    std::cerr << "Expected ')' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
-                    exit(EXIT_FAILURE);
-                }
+                
             }
         }
         return res;

@@ -1,21 +1,21 @@
-\contentsline {chapter}{\numberline {1}Introduction}{1}{}%
-\contentsline {section}{\numberline {1.1}What is Project HLM?}{1}{}%
-\contentsline {section}{\numberline {1.2}What is QML?}{1}{}%
-\contentsline {section}{\numberline {1.3}Achieving the Design Goals of QML}{2}{}%
-\contentsline {subsection}{\numberline {1.3.1}Intentional Trade-offs}{3}{}%
-\contentsline {section}{\numberline {1.4}Constraints, Resources, and Context}{4}{}%
-\contentsline {chapter}{\numberline {2}Grammar}{5}{}%
-\contentsline {section}{\numberline {2.1}Return Statement}{5}{}%
-\contentsline {section}{\numberline {2.2}Variable Declaration}{6}{}%
-\contentsline {section}{\numberline {2.3}Data Types}{6}{}%
-\contentsline {subsection}{\numberline {2.3.1}Numbers}{7}{}%
-\contentsline {subsubsection}{Integer}{7}{}%
-\contentsline {subsubsection}{Long Numbers}{7}{}%
-\contentsline {subsubsection}{Floating Numbers}{7}{}%
-\contentsline {subsubsection}{Double}{7}{}%
-\contentsline {subsection}{\numberline {2.3.2}Characters}{7}{}%
-\contentsline {subsection}{\numberline {2.3.3}Boolean}{7}{}%
-\contentsline {subsection}{\numberline {2.3.4}Arrays}{7}{}%
-\contentsline {subsection}{\numberline {2.3.5}Objects}{7}{}%
-\contentsline {subsection}{\numberline {2.3.6}User-Defined Types (Structures)}{7}{}%
-\contentsline {section}{\numberline {2.4}Functions}{7}{}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}What is Project HLM?}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}What is QML?}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Achieving the Design Goals of QML}{2}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Intentional Trade-offs}{3}{subsection.1.3.1}%
+\contentsline {section}{\numberline {1.4}Constraints, Resources, and Context}{4}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Grammar}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Return Statement}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Variable Declaration}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Data Types}{6}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Numbers}{7}{subsection.2.3.1}%
+\contentsline {subsubsection}{Integer}{7}{subsubsection*.2}%
+\contentsline {subsubsection}{Long Numbers}{7}{subsubsection*.3}%
+\contentsline {subsubsection}{Floating Numbers}{7}{subsubsection*.4}%
+\contentsline {subsubsection}{Double}{7}{subsubsection*.5}%
+\contentsline {subsection}{\numberline {2.3.2}Characters}{7}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Boolean}{7}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Arrays}{7}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Objects}{7}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}User-Defined Types (Structures)}{7}{subsection.2.3.6}%
+\contentsline {section}{\numberline {2.4}Functions}{7}{section.2.4}%

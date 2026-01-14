@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <optional>
+#include <string>
+
 enum class TokenType {
     Identifier,
     Int_lit,
