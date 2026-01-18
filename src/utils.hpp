@@ -5,16 +5,24 @@
 #pragma once
 
 #include <optional>
+#include <variant>
 #include <string>
 
+enum class DataType {
+    Int,
+    String,
+    Void
+};
+
 enum class TokenType {
+    DataType,
     Identifier,
     Int_lit,
-    String,
+    String_lit,
     Symbol,
     SemCln,
     _class,
-    _ftn,
+    _functionNode,
     _return,
     openParen,
     closeParen
@@ -27,10 +35,40 @@ struct Token {
     size_t column;
 };
 
-struct NodeExp {
+struct ExpVarDecl {
     Token token;
 };
 
+/**
+ * Represents a variable declaration node in the AST.
+ */
+struct NodeVarDecl {
+    DataType data_type;
+    std::string identifier;
+    std::optional<ExpVarDecl> exp;
+};
+
+/**
+ * Represents an expression for return statement that doesn't have identifier.
+ */
+struct ExpRetNIdent {
+    Token token;
+};
+
+/**
+ * Represents an expression for return statement that is defined by a identifier.
+ */
+struct ExpRetIdent {
+    Token token;
+};
+
+struct NodeRetExp {
+    std::variant<ExpRetNIdent, ExpRetIdent> token;
+};
+
+/**
+ * Represents a return node in the AST.
+ */
 struct NodeRet {
-    NodeExp exp;
+    NodeRetExp exp;
 };

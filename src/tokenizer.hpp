@@ -26,7 +26,7 @@ public:
                     buff.clear();
                     continue;
                 } else if (buff == "fn") {
-                    tokens.push_back({TokenType::_ftn, buff, m_line, m_token});
+                    tokens.push_back({TokenType::_functionNode, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "class") {
@@ -51,7 +51,7 @@ public:
                     buff.push_back(consume());
                 }
                 consume();
-                tokens.push_back({TokenType::String, buff, m_line, m_token});
+                tokens.push_back({TokenType::String_lit, buff, m_line, m_token});
                 buff.clear();
                 continue;
             } else if (peak().value() == ';') {

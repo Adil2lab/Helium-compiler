@@ -18,9 +18,11 @@ public:
 
     }
 
-    std::optional<NodeExp> parse_exp() {
+    std::optional<NodeRetExp> parse_exp() {
         if (peak().has_value() && peak().value().type == TokenType::Int_lit) {
-            return NodeExp {.token = consume()};
+            return NodeRetExp {.token = ExpRetNIdent { consume() } };
+        } else if (peak().has_value() && peak().value().type == TokenType::Identifier) {
+            return NodeRetExp {.token = ExpRetIdent { consume() } };
         } // else if (peak().has_value() && peak().value().type == TokenType::openParen) {
         //     return NodeExp {.token = parse_paren()};
         // }
