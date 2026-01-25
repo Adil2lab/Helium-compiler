@@ -8,7 +8,7 @@
 
 class Tokenizer {
 public:
-    inline explicit Tokenizer(std::string src) : m_src(std::move(src)) {
+    inline explicit Tokenizer(std::string &src) : m_src(std::move(src)) {
     }
 
     std::vector<Token> tokenize() {
@@ -33,9 +33,14 @@ public:
                     tokens.push_back({TokenType::_class, buff, m_line, m_token});
                     buff.clear();
                     continue;
+                } else if (buff == "int" || buff == "float" || buff == "String" || buff == "char") {
+                    tokens.push_back({TokenType::DataType, buff, m_line, m_token});
+                    buff.clear();
+                    continue;
                 } else {
-                    std::cout << "you've entered an unknown token: " << buff << std::endl;
-                    exit(EXIT_FAILURE);
+                    tokens.push_back({TokenType::Identifier, buff, m_line, m_token});
+                    buff.clear();
+                    continue;
                 }
             } else if (std::isdigit(peak().value())) {
                 buff.push_back(consume());
@@ -44,6 +49,10 @@ public:
                 }
                 tokens.push_back({TokenType::Int_lit, buff, m_line, m_token});
                 buff.clear();
+                continue;
+            } else if (peak().value() == '=') {
+                consume();
+                tokens.push_back({TokenType::Symbol, std::string("="), m_line, m_token});
                 continue;
             } else if (peak().value() == '"') {
                 consume();
@@ -70,7 +79,6 @@ public:
                 consume();
                 continue;
             } else {
-                // return {Token{TokenType::Unknown, std::string(1, c)}};
                 std::cerr << "You messed up ......" << std::endl;
                 exit(EXIT_FAILURE);
             }

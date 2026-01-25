@@ -7,6 +7,7 @@
 #include <optional>
 #include <ostream>
 #include <vector>
+#include <cstdint>
 #include "./utils.hpp"
 
 class Parser {
@@ -14,11 +15,11 @@ public:
     inline explicit Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {
     }
 
-    Token parse_paren(const int& line) {
+    // Token parse_paren(const int& line) {
 
-    }
+    // }
 
-    std::optional<NodeRetExp> parse_exp() {
+    std::optional<NodeRetExp> parse_retExp() {
         if (peak().has_value() && peak().value().type == TokenType::Int_lit) {
             return NodeRetExp {.token = ExpRetNIdent { consume() } };
         } else if (peak().has_value() && peak().value().type == TokenType::Identifier) {
@@ -34,12 +35,81 @@ public:
         while (peak().has_value()) {
             if (peak().value().type == TokenType::_return) {
                 consume();
-                if (auto nodeExp = parse_exp()) {
-                     res = NodeRet {.exp = nodeExp.value()};
+                if (auto nodeRetExp = parse_retExp()) {
+                     res = NodeRet {.exp = nodeRetExp.value()};
                 } else {
                     std::cerr << "Invalid expression at line " << peak().value().line << std::endl;
                     exit(EXIT_FAILURE);
                 }
+                if (peak().has_value() && peak().value().type == TokenType::SemCln) {
+                    consume();
+                } else {
+                    std::cerr << "Expected ';' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                
+            }
+        }
+        return res;
+    }
+
+    std::optional<ExpVarDecl> parse_expVarDecl() {
+        if (peak().has_value() && (peak().value().type == TokenType::Int_lit || peak().value().type == TokenType::Identifier)) {
+            return ExpVarDecl{ consume() };
+        }
+        return std::nullopt;
+    }
+
+    std::optional<NodeVarDecl> parse_varDecl() {
+        std::optional<NodeVarDecl> res;
+
+        while (peak().has_value()) {
+            if (peak().value().type == TokenType::DataType) {
+                Token identifierToken;
+                std::string dataType = consume().value.value();
+                DataType dataTypeValue;
+
+                switch (dataType[0]) {
+                    case 'i':
+                        dataTypeValue = DataType::Int;
+                        break;
+                    case 'f':
+                        dataTypeValue = DataType::Float;
+                        break;
+                    case 'S':
+                        dataTypeValue = DataType::String;
+                        break;
+                    case 'c':
+                        dataTypeValue = DataType::Char;
+                        break;
+                    default:
+                        std::cerr << "Unknown data type at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                        exit(EXIT_FAILURE);
+                }
+
+                if (peak().has_value() && peak().value().type == TokenType::Identifier) {
+                    identifierToken = consume();
+                } else {
+                    std::cerr << "Expected identifier at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                if (peak().has_value() && peak().value().type == TokenType::Symbol && peak().value().value == "=") {
+                    consume();
+                } else {
+                    std::cerr << "Expected '=' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                if (auto expVarDecl = parse_expVarDecl()) {
+                    res = NodeVarDecl {
+                        .dataType = dataTypeValue,
+                        .identifier = identifierToken.value.value(),
+                        .exp = expVarDecl
+                    };
+                } else {
+                    std::cerr << "Invalid expression at line " << peak().value().line << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+
                 if (peak().has_value() && peak().value().type == TokenType::SemCln) {
                     consume();
                 } else {
@@ -61,11 +131,17 @@ private:
         }
     }
 
-    inline Token consume() {
-        return tokens.at(m_index++);
+    inline Token consume(bool eat = false) {
+        Token& ref = tokens.at(m_index++);
+        Token a = std::move(ref);
+        if (eat) {
+            ref = Token{TokenType::__deleted, std::nullopt, a.line, a.column};
+        } else {
+            ref = Token{TokenType::__moved, std::nullopt, a.line, a.column};
+        }
+        return a;
     }
 
-
-    const std::vector<Token> tokens;
+    std::vector<Token> tokens;
     size_t m_index = 0;
 };

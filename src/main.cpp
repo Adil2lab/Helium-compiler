@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -11,6 +12,7 @@
 #include "parser.hpp"
 
 int main(int argc, char *argv[]) {
+    // -- CLI work starts here --
     if (argc < 2) {
         std::cerr << "Incorrect usage. Please provide exactly one argument." << std::endl;
         std::cerr << "Correct usage is:" << std::endl;
@@ -38,45 +40,53 @@ int main(int argc, char *argv[]) {
         contents = contents_stream.str();
     }
 
+    /*
+        -- CLI work ends here --
+        -- Actual compiler work starts here --
+    */
+
     Tokenizer tokenizer(std::move(contents));
 
     std::vector<Token> tokens = tokenizer.tokenize();
 
-    // File deletion for debugging
-    // {
-    //     std::filesystem::path a_path = "out.asm";
-    //     std::filesystem::path o_path = "out.o";
-    //     std::filesystem::path e_path = "out";
+    // File deletion code for debugging
+    /*
+    {
+        std::filesystem::path a_path = "out.asm";
+        std::filesystem::path o_path = "out.o";
+        std::filesystem::path e_path = "out";
 
-    //     try {
-    //         if (std::filesystem::exists(a_path) || std::filesystem::exists(o_path) || std::filesystem::exists(e_path)) {
-    //             if (std::filesystem::remove(a_path)) {
-    //                 std::cout << "File '" << a_path << "' deleted successfully." << std::endl;
-    //             }
-    //             if (std::filesystem::remove(o_path)) {
-    //                 std::cout << "File '" << o_path << "' deleted successfully." << std::endl;
-    //             }
-    //             if (std::filesystem::remove(e_path)) {
-    //                 std::cout << "File '" << e_path << "' deleted successfully." << std::endl;
-    //             }
-    //         }
-    //     } catch (const std::filesystem::filesystem_error &ex) {
-    //         std::cerr << "Filesystem error: " << ex.what() << std::endl;
-    //         return EXIT_FAILURE;
-    //     }
-    // }
+        try {
+            if (std::filesystem::exists(a_path) || std::filesystem::exists(o_path) || std::filesystem::exists(e_path)) {
+                if (std::filesystem::remove(a_path)) {
+                    std::cout << "File '" << a_path << "' deleted successfully." << std::endl;
+                }
+                if (std::filesystem::remove(o_path)) {
+                    std::cout << "File '" << o_path << "' deleted successfully." << std::endl;
+                }
+                if (std::filesystem::remove(e_path)) {
+                    std::cout << "File '" << e_path << "' deleted successfully." << std::endl;
+                }
+            }
+        } catch (const std::filesystem::filesystem_error &ex) {
+            std::cerr << "Filesystem error: " << ex.what() << std::endl;
+            return EXIT_FAILURE;
+        }
+    }
+    */
 
     Parser parser(std::move(tokens));
-    std::optional<NodeRet> tree = parser.parse_ret();
-    if (!tree.has_value()) {
+    std::optional<NodeRet> treeRet = parser.parse_ret();
+    if (!treeRet.has_value()) {
         std::cerr << "Failed to parse AST." << std::endl;
         return EXIT_FAILURE;
     }
-    Generator generator(std::move(tree.value()));
+
+    Generator generator;
 
     {
         std::fstream file("out.asm", std::ios::out);
-        file << generator.generate();
+        file << generator.gen_RetStmt(std::move(treeRet.value())); // I have to make a algorithm to check if there is any return or not.
 
         // file.close();
         //system("rm -f out.asm");

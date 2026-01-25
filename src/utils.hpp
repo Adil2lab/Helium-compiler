@@ -10,8 +10,9 @@
 
 enum class DataType {
     Int,
+    Float,
     String,
-    Void
+    Char
 };
 
 enum class TokenType {
@@ -25,7 +26,9 @@ enum class TokenType {
     _functionNode,
     _return,
     openParen,
-    closeParen
+    closeParen,
+    __deleted,
+    __moved
 };
 
 struct Token {
@@ -43,7 +46,7 @@ struct ExpVarDecl {
  * Represents a variable declaration node in the AST.
  */
 struct NodeVarDecl {
-    DataType data_type;
+    DataType dataType;
     std::string identifier;
     std::optional<ExpVarDecl> exp;
 };
