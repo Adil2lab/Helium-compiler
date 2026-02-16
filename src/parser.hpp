@@ -7,7 +7,6 @@
 #include <optional>
 #include <ostream>
 #include <vector>
-#include <cstdint>
 #include "./utils.hpp"
 
 class Parser {
@@ -24,7 +23,7 @@ public:
             return NodeRetExp {.token = ExpRetNIdent { consume() } };
         } else if (peak().has_value() && peak().value().type == TokenType::Identifier) {
             return NodeRetExp {.token = ExpRetIdent { consume() } };
-        } // else if (peak().has_value() && peak().value().type == TokenType::openParen) {
+        } // else if (peek().has_value() && peek().value().type == TokenType::openParen) {
         //     return NodeExp {.token = parse_paren()};
         // }
         return std::nullopt;
@@ -60,8 +59,8 @@ public:
         return std::nullopt;
     }
 
-    std::optional<NodeVarDecl> parse_varDecl() {
-        std::optional<NodeVarDecl> res;
+    std::vector<NodeVarDecl> parse_varDecl() {
+        std::vector<NodeVarDecl> res;
 
         while (peak().has_value()) {
             if (peak().value().type == TokenType::DataType) {
@@ -100,11 +99,11 @@ public:
                     exit(EXIT_FAILURE);
                 }
                 if (auto expVarDecl = parse_expVarDecl()) {
-                    res = NodeVarDecl {
+                    res.push_back(NodeVarDecl {
                         .dataType = dataTypeValue,
                         .identifier = identifierToken.value.value(),
                         .exp = expVarDecl
-                    };
+                    });
                 } else {
                     std::cerr << "Invalid expression at line " << peak().value().line << std::endl;
                     exit(EXIT_FAILURE);

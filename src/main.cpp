@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         -- Actual compiler work starts here --
     */
 
-    Tokenizer tokenizer(std::move(contents));
+    Tokenizer tokenizer(contents);
 
     std::vector<Token> tokens = tokenizer.tokenize();
 
@@ -82,11 +82,12 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Generator generator;
+    std::stringstream _out;
+    Generator generator(_out);
 
     {
         std::fstream file("out.asm", std::ios::out);
-        file << generator.gen_RetStmt(std::move(treeRet.value())); // I have to make a algorithm to check if there is any return or not.
+        file << generator.gen_RetStmt(treeRet.value()); // I have to make a algorithm to check if there is any return or not.
 
         // file.close();
         //system("rm -f out.asm");

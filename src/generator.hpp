@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include <algorithm>
 #include <sstream>
 #include <string>
 #include <variant>
@@ -13,7 +12,10 @@
 
 class Generator {
 public:
-    inline explicit Generator() {}
+    inline explicit Generator(std::stringstream& exout) : _exout(exout) {}
+
+    std::stringstream& _exout;
+    std::stringstream _data;
 
     #ifdef WIN32
     [[nodiscard]] std::string gen_RetStmt(NodeRet& node) const {
@@ -27,13 +29,45 @@ public:
     }
     #endif
     #ifdef __linux__
-    [[nodiscard]] std::string gen_RetStmt(NodeRet& node) const {
+    void init(std::stringstream& out) {
+        /*if (!_isInitiated) {
+            out << "section .text\n";
+            out << "    global _start\n";
+            out << "_start:\n";
+            out << "    ;; Program entry point\n";
+            out << "    push rbp\n";
+            out << "    mov rbp, rsp\n";
+            out << "    sub rsp, 16\n\n";
+            _isInitiated = true;
+        }
+        return;*/
+    }
+    [[nodiscard]] std::string gen_RetStmt(NodeRet& node) {
         std::stringstream out;
-        out << "global _start\n_start:\n";
+        // init(out);
         out << "    mov rax, 60\n";
         Gen_ExpVisitor exp_visitor{out};
         std::visit(exp_visitor, node.exp.token);
         out << "    syscall";
+        _exout << out.str();
+        return out.str();
+    }
+    [[nodiscard]] std::string gen_VarDeclStmt(NodeVarDecl& node) {
+        std::stringstream out;
+        int a;
+        std::string d;
+        init(out);
+        if (node.dataType == DataType::Int) {
+            a = 4;
+            d = "dword";
+        } else if (node.dataType == DataType::Char) {
+            a = 1;
+            d = "byte";
+        }
+        out << "    sub rsp," << a << "\n";
+        out << "    mov " << d << "[rsp]," << node.exp.value().token.value.value() << "\n";
+
+        _exout << out.str();
         return out.str();
     }
     #endif
@@ -50,5 +84,10 @@ public:
     #endif
 
 private:
-    const std::optional<NodeRet> _root;
+    static bool _isInitiated;
+    static bool _islast;
+
+    bool isAlright() {
+        return _isInitiated && _islast;
+    }
 };
