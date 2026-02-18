@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <optional>
 #include <variant>
 #include <string>
@@ -29,6 +30,27 @@ enum class TokenType {
     closeParen,
     __deleted,
     __moved
+};
+
+enum class SymbolType {
+    Variable,
+    Function,
+    Parameter
+};
+
+enum class StorageType {
+    Global,
+    Static,
+    Stack
+};
+
+struct Symbol {
+    std::string type;
+    SymbolType symbolType;
+    StorageType storageType;
+    int offset;
+    size_t size;
+    bool isMutable;
 };
 
 struct Token {
