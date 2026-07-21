@@ -2,6 +2,7 @@
 build/
 bin/
 out/
+.vs/
 
 # Ignore specific compiled binaries and objects
 *.exe
@@ -10,3 +11,6 @@ out/
 *.dll
 *.so
 *.dylib
+
+# Some exceptions
+!tools/*
