@@ -118,6 +118,7 @@ int main(int argc, char* argv[]) {
 	std::string linker_cmd;
 
 	std::string platform_type;
+	std::vector<std::string> libraries;
 
 	for (int i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
@@ -127,9 +128,20 @@ int main(int argc, char* argv[]) {
 					std::cerr << "If you want to build for windows, you have to specify every libraries you are using. You do it with  \'-l\'" << std::endl;
 					std::cerr << "And also you have to set the default library  \'kernel32.lib\'  in every program." << std::endl;
 					std::cerr << "Let\' say, you want to compile a program which uses  \'printf()\'  . So you would write something like this" << std::endl;
-					std::cerr << "	... -l kernel32.lib ucrt.lib ..." << std::endl;
+					std::cerr << "	... -pwin64 -l kernel32.lib ucrt.lib ..." << std::endl;
 					there_is_a_error = true;
 					break;
+				}
+				else if (std::string(argv[j]) == "-l" && (j + 1) == argc) {
+					std::cerr << "You didn\'t mention the libraries after  -l  " << std::endl;
+					std::cerr << "You should do it like this" << std::endl;
+					std::cerr << "	... -pwin64 -l kernel32.lib ucrt.lib ..." << std::endl;
+					there_is_a_error = true;
+					break;
+				}
+				while (!(std::string(argv[j]).starts_with('-'))) {
+					libraries.push_back(argv[j]);
+					++j;
 				}
 			}
 		}
