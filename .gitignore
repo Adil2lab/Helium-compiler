@@ -3,6 +3,8 @@ build/
 bin/
 out/
 .vs/
+.idea/
+.vscode/
 
 # Ignore specific compiled binaries and objects
 *.exe
@@ -13,4 +15,3 @@ out/
 *.dylib
 
 # Some exceptions
-!tools/*
