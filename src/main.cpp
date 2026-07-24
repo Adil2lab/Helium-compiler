@@ -119,6 +119,7 @@ int main(int argc, char* argv[]) {
 
 	std::string platform_type;
 	std::vector<std::string> libraries;
+	bool is_libraries_initialized = false;
 
 	enum class Platform {
 		Windows64,
@@ -127,7 +128,7 @@ int main(int argc, char* argv[]) {
 		HostOS
 	};
 
-	Platform platform;
+	Platform platform = Platform::Windows64;
 
 	for (size_t i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
@@ -153,13 +154,37 @@ int main(int argc, char* argv[]) {
 					++j;
 				}
 				i = j - 1;
-				platform = Platform::Windows64;
-			} 
+				is_libraries_initialized = true;
+				continue;
+			}
+			else if (std::string(argv[i]) == "-l") {
+				if (is_libraries_initialized) {
+					std::cerr << "You have already mentioned libraries once. \nYou can\'t mention libraries twice. For now, we are going to skip it." << std::endl;
+					continue;
+				}
+				else if ((i + 1) == argc) {
+					std::cerr << "You didn\'t mention the libraries after  -l  " << std::endl;
+					std::cerr << "You should do it like this" << std::endl;
+					std::cerr << "	... -l kernel32.lib ucrt.lib ..." << std::endl;
+					there_is_a_error = true;
+					break;
+				}
+				size_t j = i + 1;
+				while (j < argc && !(std::string(argv[j]).starts_with('-'))) {
+					libraries.push_back(argv[j]);
+					++j;
+				}
+				i = j - 1;
+				is_libraries_initialized = true;
+				continue;
+			}
 			else if (std::string(argv[i]) == "--platform-linux64" || std::string(argv[i]) == "-plinux64") {
 				platform = Platform::Linux64;
+				continue;
 			}
 			else if (std::string(argv[i]) == "--platform-mac64" || std::string(argv[i]) == "-pmac64") {
 				platform = Platform::MacOS;
+				continue;
 			}
 		}
 	}
