@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
 
 	}
 
-#ifdef WIN32
+#ifdef WIN32 
 	char path_buff[MAX_PATH];
 
 	GetModuleFileNameA(NULL, path_buff, MAX_PATH);
@@ -119,6 +119,15 @@ int main(int argc, char* argv[]) {
 
 	std::string platform_type;
 	std::vector<std::string> libraries;
+
+	enum class Platform {
+		Windows64,
+		Linux64,
+		MacOS,
+		HostOS
+	};
+
+	Platform platform;
 
 	for (int i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
@@ -139,28 +148,33 @@ int main(int argc, char* argv[]) {
 					there_is_a_error = true;
 					break;
 				}
-				while (!(std::string(argv[j]).starts_with('-'))) {
+				while (j < argc && !(std::string(argv[j]).starts_with('-'))) {
 					libraries.push_back(argv[j]);
 					++j;
 				}
+				i = j - 1;
+				platform = Platform::Windows64;
+			} 
+			else if (std::string(argv[i]) == "--platform-linux64" || std::string(argv[i]) == "-plinux64") {
+				platform = Platform::Linux64;
+			}
+			else if (std::string(argv[i]) == "--platform-mac64" || std::string(argv[i]) == "-pmac64") {
+				platform = Platform::MacOS;
 			}
 		}
 	}
 
 	if (there_is_a_error) return EXIT_FAILURE;
 
-	std::string arg2 = (argc > 2) ? std::string(argv[2]) : "";
-	std::string arg3 = (argc > 3) ? std::string(argv[3]) : "";
-
-	if (argc > 2 && (arg2 == "--platform-linux64" || arg2 == "-plinux64" || arg3 == "--platform-linux64" || arg3 == "-plinux64")) {
+	if (platform == Platform::Linux64) {
 		nasm_cmd = "\"" + nasm_path.string() + "\" -f elf64 out.asm";
 		linker_cmd = "\"" + ld_path.string() + "\" -o out out.o";
 	}
-	else if (argc > 2 && (arg2 == "--platform-win64" || arg2 == "-pwin64" || arg3 == "--platform-win64" || arg3 == "-pwin64")) {
+	else if (platform == Platform::Windows64) {
 		nasm_cmd = "\"" + nasm_path.string() + "\" -f win64 out.asm";
 		linker_cmd = "\"" + lld_path.string() + "\" out.obj /OUT:out.exe /ENTRY:main /SUBSYSTEM:CONSOLE";
 	}
-	else if (argc > 2 && (arg2 == "--platform-mac64" || arg2 == "-pmac64" || arg3 == "--platform-mac64" || arg3 == "-pmac64")) {
+	else if (platform == Platform::MacOS) {
 		std::cerr << "Sorry, but macOS is not supported yet. Please use Linux or Windows instead." << std::endl;
 		return EXIT_FAILURE;
 	}
