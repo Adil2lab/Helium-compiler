@@ -129,10 +129,10 @@ int main(int argc, char* argv[]) {
 
 	Platform platform;
 
-	for (int i = 1; i < argc; ++i) {
+	for (size_t i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
 			if (std::string(argv[i]) == "--platform-win64" || std::string(argv[i]) == "-pwin64") {
-				int j = i + 1;
+				size_t j = i + 1;
 				if (j == argc) {
 					std::cerr << "If you want to build for windows, you have to specify every libraries you are using. You do it with  \'-l\'" << std::endl;
 					std::cerr << "And also you have to set the default library  \'kernel32.lib\'  in every program." << std::endl;
