@@ -45,8 +45,13 @@ int main(int argc, char* argv[]) {
 
 	// -- Variables declare start --
 
+	// -- Flags start --
 	bool there_is_a_error = false; // I know it has a long name, and I am bad at naming stuffs
 	bool should_run_in_debug = false;
+	bool is_libraries_initialized = false;
+	// -- Flags end --
+
+	std::vector<std::string> libraries;
 	std::string contents;
 	std::stringstream _out;
 	std::string nasm_cmd;
@@ -166,9 +171,6 @@ int main(int argc, char* argv[]) {
 	std::filesystem::path nasm_path = compiler_dir / "tools" / "nasm.exe";
 	std::filesystem::path lld_path = compiler_dir / "tools" / "lld-link.exe";
 	std::filesystem::path ld_path = compiler_dir / "tools" / "ld.lld.exe";
-
-	std::vector<std::string> libraries;
-	bool is_libraries_initialized = false;
 
 	if (platform == Platform::Linux64) {
 		nasm_cmd = "\"" + nasm_path.string() + "\" -f elf64 out.asm";
