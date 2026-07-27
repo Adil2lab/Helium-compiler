@@ -16,7 +16,14 @@ enum class DataType {
     Char
 };
 
-enum class TokenType {
+enum class Platform {
+    Windows64,
+    Linux64,
+    MacOS,
+    HostOS
+};
+
+enum class TokenKind {
     DataType,
     Identifier,
     Int_lit,
@@ -54,7 +61,7 @@ struct Symbol {
 };
 
 struct Token {
-    TokenType type;
+    TokenKind type;
     std::optional<std::string> value;
     size_t line;
     size_t column;

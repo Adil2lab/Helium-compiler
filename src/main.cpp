@@ -57,12 +57,6 @@ int main(int argc, char* argv[]) {
 	std::string nasm_cmd;
 	std::string linker_cmd;
 	std::string platform_type;
-	enum class Platform {
-		Windows64,
-		Linux64,
-		MacOS,
-		HostOS
-	};
 	Platform platform;
 
 	// -- Variables declare end --

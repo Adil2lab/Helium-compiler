@@ -7,7 +7,7 @@
 #include <optional>
 #include <ostream>
 #include <vector>
-#include "./utils.hpp"
+#include "utils.hpp"
 
 class Parser {
 public:
@@ -19,9 +19,9 @@ public:
     // }
 
     std::optional<NodeRetExp> parse_retExp() {
-        if (peak().has_value() && peak().value().type == TokenType::Int_lit) {
+        if (peak().has_value() && peak().value().type == TokenKind::Int_lit) {
             return NodeRetExp {.token = ExpRetNIdent { consume() } };
-        } else if (peak().has_value() && peak().value().type == TokenType::Identifier) {
+        } else if (peak().has_value() && peak().value().type == TokenKind::Identifier) {
             return NodeRetExp {.token = ExpRetIdent { consume() } };
         } // else if (peek().has_value() && peek().value().type == TokenType::openParen) {
         //     return NodeExp {.token = parse_paren()};
@@ -32,7 +32,7 @@ public:
     std::optional<NodeRet> parse_ret() {
         std::optional<NodeRet> res;
         while (peak().has_value()) {
-            if (peak().value().type == TokenType::_return) {
+            if (peak().value().type == TokenKind::_return) {
                 consume();
                 if (auto nodeRetExp = parse_retExp()) {
                      res = NodeRet {.exp = nodeRetExp.value()};
@@ -40,7 +40,7 @@ public:
                     std::cerr << "Invalid expression at line " << peak().value().line << std::endl;
                     exit(EXIT_FAILURE);
                 }
-                if (peak().has_value() && peak().value().type == TokenType::SemCln) {
+                if (peak().has_value() && peak().value().type == TokenKind::SemCln) {
                     consume();
                 } else {
                     std::cerr << "Expected ';' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
@@ -53,7 +53,7 @@ public:
     }
 
     std::optional<ExpVarDecl> parse_expVarDecl() {
-        if (peak().has_value() && (peak().value().type == TokenType::Int_lit || peak().value().type == TokenType::Identifier)) {
+        if (peak().has_value() && (peak().value().type == TokenKind::Int_lit || peak().value().type == TokenKind::Identifier)) {
             return ExpVarDecl{ consume() };
         }
         return std::nullopt;
@@ -63,7 +63,7 @@ public:
         std::vector<NodeVarDecl> res;
 
         while (peak().has_value()) {
-            if (peak().value().type == TokenType::DataType) {
+            if (peak().value().type == TokenKind::DataType) {
                 Token identifierToken;
                 std::string dataType = consume().value.value();
                 DataType dataTypeValue;
@@ -86,13 +86,13 @@ public:
                         exit(EXIT_FAILURE);
                 }
 
-                if (peak().has_value() && peak().value().type == TokenType::Identifier) {
+                if (peak().has_value() && peak().value().type == TokenKind::Identifier) {
                     identifierToken = consume();
                 } else {
                     std::cerr << "Expected identifier at line " << peak().value().line << " at column " << peak().value().column << std::endl;
                     exit(EXIT_FAILURE);
                 }
-                if (peak().has_value() && peak().value().type == TokenType::Symbol && peak().value().value == "=") {
+                if (peak().has_value() && peak().value().type == TokenKind::Symbol && peak().value().value == "=") {
                     consume();
                 } else {
                     std::cerr << "Expected '=' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
@@ -109,7 +109,7 @@ public:
                     exit(EXIT_FAILURE);
                 }
 
-                if (peak().has_value() && peak().value().type == TokenType::SemCln) {
+                if (peak().has_value() && peak().value().type == TokenKind::SemCln) {
                     consume();
                 } else {
                     std::cerr << "Expected ';' at line " << peak().value().line << " at column " << peak().value().column << std::endl;
@@ -134,9 +134,9 @@ private:
         Token& ref = tokens.at(m_index++);
         Token a = std::move(ref);
         if (eat) {
-            ref = Token{TokenType::__deleted, std::nullopt, a.line, a.column};
+            ref = Token{TokenKind::__deleted, std::nullopt, a.line, a.column};
         } else {
-            ref = Token{TokenType::__moved, std::nullopt, a.line, a.column};
+            ref = Token{TokenKind::__moved, std::nullopt, a.line, a.column};
         }
         return a;
     }

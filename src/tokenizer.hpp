@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 #include <optional>
-#include "./utils.hpp"
+#include "utils.hpp"
 
 class Tokenizer {
 public:
@@ -22,23 +22,23 @@ public:
                     buff.push_back(consume());
                 }
                 if (buff == "return") {
-                    tokens.push_back({TokenType::_return, std::nullopt, m_line, m_token});
+                    tokens.push_back({TokenKind::_return, std::nullopt, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "fn") {
-                    tokens.push_back({TokenType::_functionNode, buff, m_line, m_token});
+                    tokens.push_back({TokenKind::_functionNode, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "class") {
-                    tokens.push_back({TokenType::_class, buff, m_line, m_token});
+                    tokens.push_back({TokenKind::_class, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else if (buff == "int" || buff == "float" || buff == "String" || buff == "char") {
-                    tokens.push_back({TokenType::DataType, buff, m_line, m_token});
+                    tokens.push_back({TokenKind::DataType, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 } else {
-                    tokens.push_back({TokenType::Identifier, buff, m_line, m_token});
+                    tokens.push_back({TokenKind::Identifier, buff, m_line, m_token});
                     buff.clear();
                     continue;
                 }
@@ -47,12 +47,12 @@ public:
                 while (peek().has_value() && std::isdigit(peek().value())) {
                     buff.push_back(consume());
                 }
-                tokens.push_back({TokenType::Int_lit, buff, m_line, m_token});
+                tokens.push_back({TokenKind::Int_lit, buff, m_line, m_token});
                 buff.clear();
                 continue;
             } else if (peek().value() == '=') {
                 consume();
-                tokens.push_back({TokenType::Symbol, std::string("="), m_line, m_token});
+                tokens.push_back({TokenKind::Symbol, std::string("="), m_line, m_token});
                 continue;
             } else if (peek().value() == '"') {
                 consume();
@@ -60,20 +60,20 @@ public:
                     buff.push_back(consume());
                 }
                 consume();
-                tokens.push_back({TokenType::String_lit, buff, m_line, m_token});
+                tokens.push_back({TokenKind::String_lit, buff, m_line, m_token});
                 buff.clear();
                 continue;
             } else if (peek().value() == ';') {
                 consume();
-                tokens.push_back({TokenType::SemCln, std::nullopt, m_line, m_token});
+                tokens.push_back({TokenKind::SemCln, std::nullopt, m_line, m_token});
                 continue;
             } else if (peek().value() == '(') {
                 consume();
-                tokens.push_back({TokenType::openParen, std::nullopt, m_line, m_token});
+                tokens.push_back({TokenKind::openParen, std::nullopt, m_line, m_token});
                 continue;
             } else if (peek().value() == ')') {
                 consume();
-                tokens.push_back({TokenType::closeParen, std::nullopt, m_line, m_token});
+                tokens.push_back({TokenKind::closeParen, std::nullopt, m_line, m_token});
                 continue;
             } else if (std::isspace(peek().value())) {
                 consume();
