@@ -15,8 +15,6 @@
 #include "parser.hpp"
 
 int main(int argc, char* argv[]) {
-	bool there_is_a_error = false; // I know it has a long name, and I am bad at naming stuffs
-
 	// -- CLI work starts here --
 	if (argc < 2) {
 		std::cerr << "Incorrect usage. Please provide at least the file path." << std::endl;
@@ -36,7 +34,7 @@ int main(int argc, char* argv[]) {
 #endif // __LINUX__
 		return EXIT_FAILURE;
 	}
-	else if (!(std::string(argv[1]).ends_with(".qlm") || std::string(argv[1]).ends_with(".QLM") || std::string(argv[2]).ends_with(".qlm") || std::string(argv[2]).ends_with(".QLM"))) {
+	else if (!(std::string(argv[1]).ends_with(".qlm") || std::string(argv[1]).ends_with(".QLM"))) {
 		std::cerr << "Error: given files are not supported. Please use .qlm files instead." << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -47,6 +45,8 @@ int main(int argc, char* argv[]) {
 
 	// -- Variables declare start --
 
+	bool there_is_a_error = false; // I know it has a long name, and I am bad at naming stuffs
+	bool should_run_in_debug = false;
 	std::string contents;
 	std::stringstream _out;
 	std::string nasm_cmd;
@@ -61,47 +61,7 @@ int main(int argc, char* argv[]) {
 	Platform platform;
 
 	// -- Variables declare end --
-
-	{
-		std::stringstream contents_stream;
-		std::fstream input(argv[1], std::ios::in);
-		contents_stream << input.rdbuf();
-		contents = contents_stream.str();
-	}
-
-	Tokenizer tokenizer(contents);
-
-	std::vector<Token> tokens = tokenizer.tokenize();
-
-	Parser parser(std::move(tokens));
-	std::optional<NodeRet> treeRet = parser.parse_ret();
-	if (!treeRet.has_value()) {
-		std::cerr << "Failed to parse AST." << std::endl;
-		return EXIT_FAILURE;
-	}
-
-	Generator generator(_out);
-
-	{
-		std::fstream file("out.asm", std::ios::out);
-		file << generator.gen_RetStmt(treeRet.value()); // I have to make a algorithm to check if there is any return or not.
-
-	}
-
-#ifdef WIN32 
-	platform = Platform::Windows64;
-
-	char path_buff[MAX_PATH];
-
-	GetModuleFileNameA(NULL, path_buff, MAX_PATH);
-
-	std::filesystem::path compiler_dir = std::filesystem::path(path_buff).parent_path();
-	std::filesystem::path nasm_path = compiler_dir / "tools" / "nasm.exe";
-	std::filesystem::path lld_path = compiler_dir / "tools" / "lld-link.exe";
-	std::filesystem::path ld_path = compiler_dir / "tools" / "ld.lld.exe";
-
-	std::vector<std::string> libraries;
-	bool is_libraries_initialized = false;
+	// -- Arguments parsing start --
 
 	for (size_t i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
@@ -163,6 +123,48 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (there_is_a_error) return EXIT_FAILURE;
+	// -- Arguments parsing end --
+
+	{
+		std::stringstream contents_stream;
+		std::fstream input(argv[1], std::ios::in);
+		contents_stream << input.rdbuf();
+		contents = contents_stream.str();
+	}
+
+	Tokenizer tokenizer(contents);
+
+	std::vector<Token> tokens = tokenizer.tokenize();
+
+	Parser parser(std::move(tokens));
+	std::optional<NodeRet> treeRet = parser.parse_ret();
+	if (!treeRet.has_value()) {
+		std::cerr << "Failed to parse AST." << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	Generator generator(_out);
+
+	{
+		std::fstream file("out.asm", std::ios::out);
+		file << generator.gen_RetStmt(treeRet.value()); // I have to make a algorithm to check if there is any return or not.
+
+	}
+
+#ifdef WIN32 
+	platform = Platform::Windows64;
+
+	char path_buff[MAX_PATH];
+
+	GetModuleFileNameA(NULL, path_buff, MAX_PATH);
+
+	std::filesystem::path compiler_dir = std::filesystem::path(path_buff).parent_path();
+	std::filesystem::path nasm_path = compiler_dir / "tools" / "nasm.exe";
+	std::filesystem::path lld_path = compiler_dir / "tools" / "lld-link.exe";
+	std::filesystem::path ld_path = compiler_dir / "tools" / "ld.lld.exe";
+
+	std::vector<std::string> libraries;
+	bool is_libraries_initialized = false;
 
 	if (platform == Platform::Linux64) {
 		nasm_cmd = "\"" + nasm_path.string() + "\" -f elf64 out.asm";
@@ -184,12 +186,6 @@ int main(int argc, char* argv[]) {
 	system(nasm_cmd.c_str());
 	system(linker_cmd.c_str());
 
-	if (argc > 2 && (std::string(argv[2]) == "--run-with-delete" || std::string(argv[2]).find("-rd") != std::string::npos)) { // I need to get a debug arg not a delete arg
-		system("./out");
-		system("rm -f out.asm out.o out");
-		return EXIT_SUCCESS;
-	}
-
 	// Moving executable to the same directory as the input file
 	{
 		std::string filen = std::string(argv[1]);
@@ -199,6 +195,11 @@ int main(int argc, char* argv[]) {
 		filen += "out";
 		system(("mv out " + filen).c_str());
 	}
+
+	if (!should_run_in_debug) {
+		system("rm -f out.asm out.o");
+	}
+
 
 	return EXIT_SUCCESS;
 #endif // WIN32
@@ -207,12 +208,6 @@ int main(int argc, char* argv[]) {
 	system("nasm -felf64 out.asm");
 	system("ld -o out out.o");
 
-	if (argc > 2 && (std::string(argv[2]) == "--run-with-delete" || std::string(argv[2]).find("-rd") != std::string::npos)) { // // I need to get a debug arg not a delete arg
-		system("./out");
-		system("rm -f out.asm out.o out");
-		return EXIT_SUCCESS;
-	}
-
 	// Moving executable to the same directory as the input file
 	{
 		std::string filen = std::string(argv[1]);
@@ -221,6 +216,10 @@ int main(int argc, char* argv[]) {
 
 		filen += "out";
 		system(("mv out " + filen).c_str());
+	}
+
+	if (!should_run_in_debug) {
+		system("rm -f out.asm out.o");
 	}
 
 	return EXIT_SUCCESS;
