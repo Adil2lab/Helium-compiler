@@ -10,7 +10,7 @@
 #include <windows.h> // for getting the file path
 #endif
 
-#include "./tokenizer.hpp"
+#include "tokenizer.hpp"
 #include "generator.hpp"
 #include "parser.hpp"
 
