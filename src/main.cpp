@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 	else if (!(std::string(argv[1]).ends_with(".qlm") || std::string(argv[1]).ends_with(".QLM"))) {
-		std::cerr << "Error: given files are not supported. Please use .qlm files instead." << std::endl;
+		std::cerr << "Error: given files are not supported. Please use .qlm files." << std::endl;
 		return EXIT_FAILURE;
 	}
 	else if (!(std::filesystem::exists(argv[1]))) {
@@ -117,6 +117,10 @@ int main(int argc, char* argv[]) {
 			}
 			else if (std::string(argv[i]) == "--platform-mac64" || std::string(argv[i]) == "-pmac64") {
 				platform = Platform::MacOS;
+				continue;
+			}
+			else if (std::string(argv[i]) == "-rd") {
+				should_run_in_debug = true;
 				continue;
 			}
 		}
