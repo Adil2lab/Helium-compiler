@@ -45,7 +45,23 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
+	// -- Variables declare start --
+
 	std::string contents;
+	std::stringstream _out;
+	std::string nasm_cmd;
+	std::string linker_cmd;
+	std::string platform_type;
+	enum class Platform {
+		Windows64,
+		Linux64,
+		MacOS,
+		HostOS
+	};
+	Platform platform;
+
+	// -- Variables declare end --
+
 	{
 		std::stringstream contents_stream;
 		std::fstream input(argv[1], std::ios::in);
@@ -53,40 +69,9 @@ int main(int argc, char* argv[]) {
 		contents = contents_stream.str();
 	}
 
-	/*
-		-- CLI work ends here --
-		-- Actual compiler work starts here --
-	*/
-
 	Tokenizer tokenizer(contents);
 
 	std::vector<Token> tokens = tokenizer.tokenize();
-
-	// File deletion code for debugging
-	/*
-	{
-		std::filesystem::path a_path = "out.asm";
-		std::filesystem::path o_path = "out.o";
-		std::filesystem::path e_path = "out";
-
-		try {
-			if (std::filesystem::exists(a_path) || std::filesystem::exists(o_path) || std::filesystem::exists(e_path)) {
-				if (std::filesystem::remove(a_path)) {
-					std::cout << "File '" << a_path << "' deleted successfully." << std::endl;
-				}
-				if (std::filesystem::remove(o_path)) {
-					std::cout << "File '" << o_path << "' deleted successfully." << std::endl;
-				}
-				if (std::filesystem::remove(e_path)) {
-					std::cout << "File '" << e_path << "' deleted successfully." << std::endl;
-				}
-			}
-		} catch (const std::filesystem::filesystem_error &ex) {
-			std::cerr << "Filesystem error: " << ex.what() << std::endl;
-			return EXIT_FAILURE;
-		}
-	}
-	*/
 
 	Parser parser(std::move(tokens));
 	std::optional<NodeRet> treeRet = parser.parse_ret();
@@ -95,7 +80,6 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	std::stringstream _out;
 	Generator generator(_out);
 
 	{
@@ -105,6 +89,8 @@ int main(int argc, char* argv[]) {
 	}
 
 #ifdef WIN32 
+	platform = Platform::Windows64;
+
 	char path_buff[MAX_PATH];
 
 	GetModuleFileNameA(NULL, path_buff, MAX_PATH);
@@ -114,21 +100,8 @@ int main(int argc, char* argv[]) {
 	std::filesystem::path lld_path = compiler_dir / "tools" / "lld-link.exe";
 	std::filesystem::path ld_path = compiler_dir / "tools" / "ld.lld.exe";
 
-	std::string nasm_cmd;
-	std::string linker_cmd;
-
-	std::string platform_type;
 	std::vector<std::string> libraries;
 	bool is_libraries_initialized = false;
-
-	enum class Platform {
-		Windows64,
-		Linux64,
-		MacOS,
-		HostOS
-	};
-
-	Platform platform = Platform::Windows64;
 
 	for (size_t i = 1; i < argc; ++i) {
 		if (std::string(argv[i]).starts_with('-')) {
