@@ -57,8 +57,9 @@ public:
     }
     #endif
     #ifdef __APPLE__
-    
     #endif
+
+
 
 private:
     static bool _isInitiated;

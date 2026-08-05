@@ -20,7 +20,7 @@ enum class Platform {
     Windows64,
     Linux64,
     MacOS,
-    HostOS
+    NotSure
 };
 
 enum class TokenKind {

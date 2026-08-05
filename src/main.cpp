@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
 	std::string nasm_cmd;
 	std::string linker_cmd;
 	std::string platform_type;
-	Platform platform;
+	Platform platform = Platform::NotSure;
 
 	// -- Variables declare end --
 	// -- Arguments parsing start --
@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
 		if (std::string(argv[i]).starts_with('-')) {
 			if (std::string(argv[i]) == "--platform-win64" || std::string(argv[i]) == "-pwin64") {
 				size_t j = i + 1;
+				platform = Platform::Windows64;
 				if (j == argc) {
 					std::cerr << "If you want to build for windows, you have to specify every libraries you are using. You do it with  \'-l\'" << std::endl;
 					std::cerr << "And also you have to set the default library  \'kernel32.lib\'  in every program." << std::endl;
@@ -106,8 +107,16 @@ int main(int argc, char* argv[]) {
 					libraries.push_back(argv[j]);
 					++j;
 				}
+				if (libraries.empty()) {
+					std::cerr << "You didn\'t mention the libraries after  -l  " << std::endl;
+					std::cerr << "You should do it like this" << std::endl;
+					std::cerr << "	... -l kernel32.lib ucrt.lib ..." << std::endl;
+					there_is_a_error = true;
+					break;
+				}
 				i = j - 1;
 				is_libraries_initialized = true;
+				platform = Platform::Windows64;
 				continue;
 			}
 			else if (std::string(argv[i]) == "--platform-linux64" || std::string(argv[i]) == "-plinux64") {
@@ -126,6 +135,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (there_is_a_error) return EXIT_FAILURE;
+	if (platform == Platform::NotSure) return EXIT_FAILURE;
 	// -- Arguments parsing end --
 
 	{
@@ -155,7 +165,6 @@ int main(int argc, char* argv[]) {
 	}
 
 #ifdef WIN32 
-	platform = Platform::Windows64;
 
 	char path_buff[MAX_PATH];
 
