@@ -12,33 +12,35 @@
 
 class Generator {
 public:
-    inline explicit Generator(std::stringstream& exout) : _exout(exout) {}
+    inline explicit Generator() {}
 
-    std::stringstream& _exout;
-    std::stringstream _data;
+    // -- Windows 64 -- start --
 
-    #ifdef WIN32
-    [[nodiscard]] std::string gen_RetStmt(NodeRet& node) const {
-        std::stringstream out;
+    void gen_drectiveHeader(const std::vector<std::string>& libraries, std::stringstream& out) {
+        
+    }
+
+    [[nodiscard]] void gen_win_RetStmt(NodeRet& node, std::stringstream& out) const {
         out << "    .global main\nmain:\n";
         out << "    mov rax, 60\n";
         Gen_ExpVisitor exp_visitor{out};
         std::visit(exp_visitor, node.exp.token);
         out << "    syscall\n";
-        return out.str();
+        return;
     }
-    #endif
-    #ifdef __linux__
-    [[nodiscard]] std::string gen_RetStmt(NodeRet& node) {
-        std::stringstream out;
+
+    // -- Windows 64 -- end --
+    // -- Linux 64 -- start --
+
+    [[nodiscard]] std::string gen_lin_RetStmt(NodeRet& node, std::stringstream& out) {
+        out << "    .global main\nmain:\n";
         out << "    mov rax, 60\n";
         Gen_ExpVisitor exp_visitor{out};
         std::visit(exp_visitor, node.exp.token);
-        out << "    syscall";
-        _exout << out.str();
-        return out.str();
+        out << "    syscall\n";
+        return;
     }
-    [[nodiscard]] std::string gen_VarDeclStmt(NodeVarDecl& node) {
+    [[nodiscard]] std::string gen_lin_VarDeclStmt(NodeVarDecl& node) {
         std::stringstream out;
         int quantity;
         std::string byteSize;
@@ -49,23 +51,16 @@ public:
             quantity = 1;
             byteSize = "byte";
         }
-        out << "    sub rsp," << a << "\n";
-        out << "    mov " << d << "[rsp]," << node.exp.value().token.value.value() << "\n";
+        out << "    sub rsp," << quantity << "\n";
+        out << "    mov " << byteSize << "[rsp]," << node.exp.value().token.value.value() << "\n";
 
-        _exout << out.str();
         return out.str();
     }
-    #endif
-    #ifdef __APPLE__
-    #endif
 
+    // -- Linux 64 -- end --
 
+    int gen_Progam(std::stringstream& assemblyCode) {
 
-private:
-    static bool _isInitiated;
-    static bool _islast;
-
-    bool isAlright() {
-        return _isInitiated && _islast;
     }
+private:
 };
