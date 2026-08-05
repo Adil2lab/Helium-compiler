@@ -56,7 +56,6 @@ int main(int argc, char* argv[]) {
 	std::stringstream _out;
 	std::string nasm_cmd;
 	std::string linker_cmd;
-	std::string platform_type;
 	Platform platform = Platform::NotSure;
 
 	// -- Variables declare end --

@@ -12,15 +12,27 @@
 
 class Generator {
 public:
-    inline explicit Generator() {}
+    inline explicit Generator(const Platform& _platform, const std::vector<std::string>& _libraries) : platform(_platform), libraries(_libraries) {}
+
+    Platform platform;
+    std::vector<std::string> libraries;
 
     // -- Windows 64 -- start --
 
-    void gen_drectiveHeader(const std::vector<std::string>& libraries, std::stringstream& out) {
-        
+    void gen_drectiveHeader(const std::vector<std::string>& _libraries, std::stringstream& out) {
+        // ==============================================================
+        //  COFF DIRECTIVE SECTION(Autolink metadata read by lld - link)
+        // ==============================================================
+        out << "section .drective info\n";
+        out << "    db \'";
+        for (std::string lib : _libraries) {
+            out << "/DEFAULTLIB:" << lib << ' ';
+        }
+        out << "\'\n";
+        return;
     }
 
-    [[nodiscard]] void gen_win_RetStmt(NodeRet& node, std::stringstream& out) const {
+    [[nodiscard]] void gen_win_RetStmt(NodeRet& node, std::stringstream& out) {
         out << "    .global main\nmain:\n";
         out << "    mov rax, 60\n";
         Gen_ExpVisitor exp_visitor{out};
@@ -32,7 +44,7 @@ public:
     // -- Windows 64 -- end --
     // -- Linux 64 -- start --
 
-    [[nodiscard]] std::string gen_lin_RetStmt(NodeRet& node, std::stringstream& out) {
+    [[nodiscard]] void gen_lin_RetStmt(NodeRet& node, std::stringstream& out) {
         out << "    .global main\nmain:\n";
         out << "    mov rax, 60\n";
         Gen_ExpVisitor exp_visitor{out};
@@ -40,8 +52,7 @@ public:
         out << "    syscall\n";
         return;
     }
-    [[nodiscard]] std::string gen_lin_VarDeclStmt(NodeVarDecl& node) {
-        std::stringstream out;
+    [[nodiscard]] void gen_lin_VarDeclStmt(NodeVarDecl& node, std::stringstream& out) {
         int quantity;
         std::string byteSize;
         if (node.dataType == DataType::Int) {
@@ -54,7 +65,7 @@ public:
         out << "    sub rsp," << quantity << "\n";
         out << "    mov " << byteSize << "[rsp]," << node.exp.value().token.value.value() << "\n";
 
-        return out.str();
+        return;
     }
 
     // -- Linux 64 -- end --
