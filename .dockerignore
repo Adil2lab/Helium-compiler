@@ -1,0 +1,10 @@
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+hel
+docs/**/*.aux
+docs/**/*.log
+docs/**/*.pdf
+docs/**/*.synctex.gz
+.git/
